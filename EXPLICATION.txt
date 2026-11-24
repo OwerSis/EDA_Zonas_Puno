@@ -1,0 +1,104 @@
+1. DecisionTreeClassifier (Gini / Entropia): El modelo base. Un único árbol
+interpretable donde se compara cómo se divide el espacio usando la impureza de
+Gini vs la ganancia de información (Entropia).
+
+2. Random Forest (Bagging): Crea cientos de árboles en paralelo para reducir el
+sobreajuste (verfitting) y la varianza del árbol simple.
+
+3. XGBoost (Boosting): Contruye árboles de forma secuencial corrigiendo los
+errores del árbol anterior mediante optimización por gradiente.
+
+4. LightGBM (Boosting moderno): Algoritmo de última generación que optimiza la 
+velocidad y el uso de momoria creciendo por hojas (leaf-wise) en lugar de niveles.
+
+------------------------------------------------------------------------------
+
+¿Cómo se aplican a los datos que tenemos?
+
+Opcion A: Clasificación del Uso o Tipo de Edificaciones (buildings)
+
+Cada edificación, casa, edificio registrado en el mapa de Puno (OpenStreeMap)
+donde la Variable Objetivo (y) sería el Tipo de Edificación (por ejemplo: 
+Residencial, Comercial/Servicios, Eduación/Salud, Gubernamental/Otros).
+
+Variables extraidas de los datos (X):
+
+- Área de edificación (m^2) y perímetro.
+- Factor de forma o compacidad geométrica.
+- Distancia a la vía más cercana y tipo de vía (autopista, avenida, callejón).
+- Distancia a la plaza de armas / centro de Puno.
+- Cantidad de paraderos o servicios en un radio de 300 metros.
+- Densidad de edificios vecinos en su entorno.
+
+Opcion C: Clasificación del Uso de Suelo Urbano por Zonas (landuse o Grilla)
+
+Una manzana urbana o cuadrícula de terreno de Puno. Donde la Variable Objetivo (Y)
+sería el Uso predominante de suelo (Residencial denso, Comercial/Mixto, 
+Periurbano/Baja densidad, Zona natural/protegida).
+
+Variables extraidas de los datos (X)
+
+- Porcentaje de área construida dentro de la zona.
+- Longitud total de vías dentro de la zona.
+- Conteo de comercios, escuelas y paraderos.
+- Distancia promedio a la orilla del lago o a las quebradas.
+
+---------------------------------------------------------------------------------
+
+ANÁLISIS URBANO MULTIESCALA EN PUNO
+
+Nivel Micro: (Edificaciónes / Lotes) ¿Qué función cumple cada edificación?
+Nivel Macro: (Zonas / Uso de Suelo) ¿Qué tipo de suelo/zona predomina?
+
+¿Cómo se articulan juntos en el proyecto?
+
+1. Nivel Micro: Clasificación de Edificaciones.
+Clasificar cada edificación individualmente en categorías como Residencial,
+Comercial/Servicios, Educacional/Salud.
+Entrenando los 4 modelos y ver cuál predice mejor a nivel de edificio individual.
+
+2. Nivel Macro: Clasificación de Uso de Suelo y Zonoficación.
+Clasificar polígonos y sectores urbanos en Residencial consolidado, 
+Comercial/Céntrico, Áreas verdes/Recreacional, Agrícola/Rural.
+
+Aquí se puede usar información agregada del nivel micro:
+¿Cuántos edificios hay por zona?
+¿Cuál es la densidad contruida?
+¿Qué longitud de vías y cuántos servicios cruzan la zona?
+
+
+Sería un estudio integral de Puno desde lo particular (el edificio) hasta lo 
+general (la zona).
+
+Mapa 1: Edificaciones de Puno coloreadas por su tipo predicho.
+Mapa 2: El mapa de zonificación general de la ciudad clasificado por los 
+algoritmos.
+
+-------------------------------------------------------------------------------
+
+Estrutura de Directorios.
+
+Zonas_Puno/
+│
+├── Data/                              <- [NO MODIFICAR] Shapefiles crudos de Perú descargados de Geofabrik/OSM (~1.5 GB).
+│
+├── data_puno/                         <- Shapefiles y GeoJSON filtrados y recortados ÚNICAMENTE para el Distrito de Puno.
+│   ├── puno_distrito_boundary.geojson <- Polígono administrativo de Puno (admin_level8, osm_id: 1913513).
+│   ├── puno_buildings.geojson         <- Edificaciones recortadas en Puno.
+│   ├── puno_landuse.geojson           <- Usos de suelo recortados en Puno.
+│   ├── puno_roads.geojson             <- Red vial dentro de Puno.
+│   └── puno_pois.geojson              <- Puntos de interés (salud, educación, comercio, etc.).
+│
+├── notebooks/                         <- Cuadernos Jupyter (.ipynb) documentados paso a paso.
+│   ├── 01_delimitacion_puno.ipynb     <- Extracción del polígono del Distrito de Puno y recorte de las capas necesarias (buildings, landuse, roads, pois).
+│   ├── 02_micro_edificaciones.ipynb   <- Ingeniería de variables + Entrenamiento y comparativa de los 4 modelos para el Nivel Micro (Edificaciones).
+│   ├── 03_macro_zonificacion.ipynb    <- Agregación espacial + Entrenamiento y comparativa de los 4 modelos para el Nivel Macro (Uso de Suelo).
+│   └── 04_evaluacion_comparativa.ipynb<- Comparativa global, tablas de métricas, Gini vs Entropía y mapas finales.
+│
+├── PROJECT_CONTEXT.md                 <- Este archivo (memoria y contexto principal).
+├── PROGRESS.md                        <- Bitácora de avance y estado actual.
+└── README.md                          <- Portada general del proyecto.
+
+
+-----------------------------------------------------------------------------
+

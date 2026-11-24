@@ -1,0 +1,25 @@
+# Datos crudos de OpenStreetMap (~1.5 GB - excede el límite de GitHub)
+Data/
+
+# Archivos temporales de compilación LaTeX
+Informe/*.aux
+Informe/*.log
+Informe/*.out
+Informe/*.synctex.gz
+Informe/*.toc
+Informe/*.fls
+Informe/*.fdb_latexmk
+Informe/*.bbl
+Informe/*.blg
+
+# Python y Jupyter
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
