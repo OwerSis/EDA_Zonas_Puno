@@ -389,9 +389,9 @@ Para evitar confusiones metodológicas frecuentes, es fundamental distinguir dos
 \begin{enumerate}[leftmargin=0.85cm, itemsep=3pt]
     \item \textbf{Fase de Evaluación Supervisada (únicamente sobre las $184$ edificaciones verificadas):}
     \begin{itemize}[leftmargin=0.6cm, itemsep=1pt]
-        \item \textbf{80\% Entrenamiento (\textit{Train} = $147$ edificaciones):} datos con los que cada modelo aprende las reglas que vinculan $X \rightarrow y$.
-        \item \textbf{20\% Prueba (\textit{Test} = $37$ edificaciones):} \textbf{no} se usa para imputar los edificios faltantes; corresponde a edificaciones cuya etiqueta real sí conocemos en OSM, pero que ocultamos temporalmente a los algoritmos para simular un \textbf{``examen final''} y construir la matriz de confusión de manera imparcial. La partición es \textbf{estratificada} para conservar exactamente las mismas proporciones de las 3 clases en Train y Test.
-        \item \textbf{Validación Cruzada Estratificada de 5 Pliegues (\texttt{5-Fold Stratified CV}):} divide los datos etiquetados en cinco bloques iguales; en cinco rondas rotativas, cuatro bloques ($80\%$) entrenan y el bloque restante ($20\%$) evalúa. El promedio de las cinco rondas (\texttt{CV-5 F1-Macro}) garantiza que el modelo ganador sea verdaderamente el que mejor generaliza y no el resultado de una partición afortunada.
+        \item \textbf{75\% Entrenamiento (\textit{Train} = $138$ edificaciones):} datos con los que cada modelo aprende las reglas que vinculan $X \rightarrow y$.
+        \item \textbf{25\% Prueba (\textit{Test} = $46$ edificaciones):} \textbf{no} se usa para imputar los edificios faltantes; corresponde a edificaciones cuya etiqueta real sí conocemos en OSM, pero que ocultamos temporalmente a los algoritmos para simular un \textbf{``examen final''} y construir la matriz de confusión de manera imparcial. La partición es \textbf{estratificada} para conservar exactamente las mismas proporciones de las 3 clases en Train y Test.
+        \item \textbf{Validación Cruzada Estratificada de 5 Pliegues (\texttt{5-Fold Stratified CV}):} se aplica estrictamente sobre el \textbf{75\% de entrenamiento ($138$ edificaciones)}, dividiéndolo en cinco bloques iguales; en cinco rondas rotativas, cuatro bloques entrenan y el bloque restante valida sin tocar nunca el 25\% de prueba. El promedio de las cinco rondas (\texttt{CV-5 F1-Macro}) garantiza que el modelo ganador sea verdaderamente el que mejor generaliza y no el resultado de una partición afortunada.
     \end{itemize}
     \item \textbf{Fase de Imputación (sobre las $468$ edificaciones sin etiqueta):} Estas $468$ observaciones nunca ingresan ni al entrenamiento ni al examen porque carecen de etiqueta real en OSM. Únicamente tras elegir al ganador en la Fase~1, dicho modelo se reentrena con el $100\%$ de las $184$ verificadas y predice el uso de las $468$ edificaciones faltantes.
 \end{enumerate}
@@ -399,7 +399,7 @@ Para evitar confusiones metodológicas frecuentes, es fundamental distinguir dos
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.98\textwidth]{figures/02_flujo_validacion_micro.png}
-    \caption{Esquema metodológico de validación (partición estratificada 80/20 + 5-Fold CV sobre las $184$ verificadas) separado de la imputación final de las $468$ edificaciones sin etiqueta.}
+    \caption{Esquema metodológico de validación (partición estratificada 75/25 + 5-Fold CV sobre el 75\% de entrenamiento de las $184$ verificadas) separado de la imputación final de las $468$ edificaciones sin etiqueta.}
     \label{fig:flujo_validacion_micro}
 \end{figure}
 
@@ -409,17 +409,17 @@ Antes de entrenar la comparativa final, se ejecutó un \textbf{experimento de po
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.82\textwidth]{figures/02_poda_gini_vs_entropia_micro.png}
-    \caption{Experimento de poda (\texttt{max\_depth} de $2$ a $10$) comparando los criterios de Gini y Entropía mediante F1-Score Macro en validación cruzada 5-Fold (Nivel Micro).}
+    \caption{Experimento de poda (\texttt{max\_depth} de $2$ a $10$) comparando los criterios de Gini y Entropía mediante F1-Score Macro en validación cruzada 5-Fold sobre el 75\% de entrenamiento (Nivel Micro).}
     \label{fig:poda_micro}
 \end{figure}
 
 \subsection{Entrenamiento y Tabla Comparativa de los 4 Modelos (5 Configuraciones)}
 
-Se entrenaron las cinco configuraciones sobre la misma partición estratificada ($147$ entrenamiento / $37$ prueba) y se evaluaron en 5-Fold CV midiendo además el tiempo de cómputo (Tabla~\ref{tab:resultados_micro_nb02}).
+Se entrenaron las cinco configuraciones sobre la misma partición estratificada ($138$ entrenamiento / $46$ prueba) y se evaluaron en 5-Fold CV sobre el 75\% de entrenamiento midiendo además el tiempo de cómputo (Tabla~\ref{tab:resultados_micro_nb02}).
 
 \begin{table}[H]
     \centering
-    \caption{Tabla comparativa de métricas y tiempo de entrenamiento de los 4 modelos (5 configuraciones) — Nivel Micro.}
+    \caption{Tabla comparativa de métricas y tiempo de entrenamiento de los 4 modelos (5 configuraciones) — Nivel Micro (75/25 + 5-Fold CV sobre Train).}
     \label{tab:resultados_micro_nb02}
     \setlength{\tabcolsep}{4pt}
     \footnotesize
@@ -429,13 +429,13 @@ Se entrenaron las cinco configuraciones sobre la misma partición estratificada 
         \rowcolor{verdeHeader}
         \textcolor{white}{\textbf{Modelo}} & \textcolor{white}{\textbf{Test Acc}} & \textcolor{white}{\textbf{Test Prec (M)}} & \textcolor{white}{\textbf{Test Rec (M)}} & \textcolor{white}{\textbf{Test F1 (M)}} & \textcolor{white}{\textbf{CV-5 Acc}} & \textcolor{white}{\textbf{CV-5 F1 (M)}} & \textcolor{white}{\textbf{Tiempo (ms)}} \\
         \midrule
-        \textbf{LightGBM} \textit{(Ganador CV)} & 0.8108 & 0.7879 & 0.7889 & 0.7874 & \textbf{0.7667} & \textbf{0.7496} & 63.35 \\
+        \textbf{XGBoost} \textit{(Ganador CV)} & 0.7826 & 0.7665 & 0.7675 & 0.7593 & \textbf{0.7540} & \textbf{0.7275} & 211.17 \\
         \rowcolor{verdeSuave!50}
-        \textbf{Random Forest} \textit{(Ganador Test)} & \textbf{0.8378} & \textbf{0.8681} & \textbf{0.8333} & \textbf{0.8115} & 0.7664 & 0.7465 & 408.88 \\
-        XGBoost & 0.7838 & 0.7676 & 0.7667 & 0.7545 & 0.7395 & 0.7160 & 254.47 \\
+        \textbf{Random Forest} \textit{(Empate Test Acc)} & \textbf{0.8261} & \textbf{0.8343} & \textbf{0.8188} & 0.8046 & \textbf{0.7540} & 0.7264 & 406.26 \\
+        DecisionTree (Gini) & 0.7826 & 0.8295 & 0.7744 & 0.7498 & 0.7386 & 0.7115 & 2.22 \\
         \rowcolor{verdeSuave!50}
-        DecisionTree (Entropía) & 0.6757 & 0.6347 & 0.6500 & 0.6204 & 0.7009 & 0.6744 & 1.87 \\
-        DecisionTree (Gini) & 0.8108 & 0.8125 & 0.8000 & 0.7831 & 0.6793 & 0.6517 & \textbf{1.76} \\
+        DecisionTree (Entropía) & 0.7826 & 0.8295 & 0.7744 & 0.7498 & 0.7315 & 0.7013 & \textbf{1.66} \\
+        \textbf{LightGBM} \textit{(Mejor Test F1)} & \textbf{0.8261} & 0.8119 & 0.8085 & \textbf{0.8087} & 0.7251 & 0.6882 & 40.16 \\
         \bottomrule
     \end{tabular}
     \end{adjustbox}
@@ -450,7 +450,7 @@ Para dominar el funcionamiento interno de los cuatro algoritmos, se visualizaron
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/02_arbol_gini_completo.png}
-    \caption{Árbol completo de \texttt{DecisionTreeClassifier} con criterio \textbf{Gini} en el Nivel Micro (profundidad $= 4$, $11$ hojas terminales).}
+    \caption{Árbol completo de \texttt{DecisionTreeClassifier} con criterio \textbf{Gini} en el Nivel Micro (profundidad $= 2$, $4$ hojas terminales).}
     \label{fig:nb02_gini}
 \end{figure}
 
@@ -460,7 +460,7 @@ Para dominar el funcionamiento interno de los cuatro algoritmos, se visualizaron
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/02_arbol_entropia_completo.png}
-    \caption{Árbol completo de \texttt{DecisionTreeClassifier} con criterio \textbf{Entropía} en el Nivel Micro (profundidad $= 4$, $11$ hojas terminales).}
+    \caption{Árbol completo de \texttt{DecisionTreeClassifier} con criterio \textbf{Entropía} en el Nivel Micro (profundidad $= 2$, $4$ hojas terminales).}
     \label{fig:nb02_entropia}
 \end{figure}
 
@@ -471,14 +471,14 @@ Random Forest entrena $200$ árboles profundos e independientes en paralelo. Las
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/02_arbol_rf_001_completo.png}
-    \caption{Primer árbol completo del bosque \textbf{Random Forest} (Árbol \#1 de $200$, profundidad $= 7$, $22$ hojas terminales).}
+    \caption{Primer árbol completo del bosque \textbf{Random Forest} (Árbol \#1 de $200$, profundidad $= 6$, $20$ hojas terminales).}
     \label{fig:nb02_rf1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/02_arbol_rf_200_completo.png}
-    \caption{Último árbol completo del bosque \textbf{Random Forest} (Árbol \#200 de $200$, profundidad $= 7$, $23$ hojas terminales).}
+    \caption{Último árbol completo del bosque \textbf{Random Forest} (Árbol \#200 de $200$, profundidad $= 6$, $20$ hojas terminales).}
     \label{fig:nb02_rf200}
 \end{figure}
 
@@ -489,14 +489,14 @@ A diferencia de Random Forest, en \textit{Boosting} los árboles sí se construy
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.98\textwidth]{figures/02_arbol_xgboost_ronda1_completo.png}
-    \caption{Árbol completo de \textbf{XGBoost} en la Ronda~1 (clase \texttt{Comercial\_Servicios}, $11$ hojas terminales): crecimiento equilibrado por niveles (\textit{level-wise}) con ganancias iniciales altas.}
+    \caption{Árbol completo de \textbf{XGBoost} en la Ronda~1 (clase \texttt{Comercial\_Servicios}, $10$ hojas terminales): crecimiento equilibrado por niveles (\textit{level-wise}) con ganancias iniciales altas.}
     \label{fig:nb02_xgb1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.84\textwidth]{figures/02_arbol_xgboost_ronda150_completo.png}
-    \caption{Árbol completo de \textbf{XGBoost} en la Ronda Final~\#150 ($6$ hojas terminales): evidencia la convergencia del Boosting mediante ganancias y pesos $w^*$ cercanos a cero.}
+    \caption{Árbol completo de \textbf{XGBoost} en la Ronda Final~\#150 ($7$ hojas terminales): evidencia la convergencia del Boosting mediante ganancias y pesos $w^*$ cercanos a cero.}
     \label{fig:nb02_xgb150}
 \end{figure}
 
@@ -511,18 +511,18 @@ A diferencia de Random Forest, en \textit{Boosting} los árboles sí se construy
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.88\textwidth]{figures/02_arbol_lightgbm_ronda150_completo.png}
-    \caption{Árbol completo de \textbf{LightGBM} en la Ronda Final~\#150 ($7$ hojas terminales): última iteración de ajuste fino \textit{leaf-wise}.}
+    \caption{Árbol completo de \textbf{LightGBM} en la Ronda Final~\#150 ($10$ hojas terminales): última iteración de ajuste fino \textit{leaf-wise}.}
     \label{fig:nb02_lgbm150}
 \end{figure}
 
 \subsection{Matrices de Confusión e Importancia de Variables}
 
-Para evaluar en qué clases acierta o se equivoca cada algoritmo durante el examen final ($20\%$ Test, $n = 37$ edificaciones), la Figura~\ref{fig:nb02_cm} presenta las cinco matrices de confusión lado a lado.
+Para evaluar en qué clases acierta o se equivoca cada algoritmo durante el examen final ($25\%$ Test, $n = 46$ edificaciones), la Figura~\ref{fig:nb02_cm} presenta las cinco matrices de confusión lado a lado.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/02_matrices_confusion_micro.png}
-    \caption{Matrices de confusión en el conjunto de prueba ($20\%$, $n = 37$) para las cinco configuraciones del Nivel Micro.}
+    \caption{Matrices de confusión en el conjunto de prueba ($25\%$, $n = 46$) para las cinco configuraciones del Nivel Micro.}
     \label{fig:nb02_cm}
 \end{figure}
 
@@ -537,11 +537,11 @@ Complementariamente, la Figura~\ref{fig:nb02_fi} compara la importancia relativa
 
 \subsection{Reentrenamiento e Imputación Final}
   
-Una vez completada la evaluación comparativa y seleccionado el modelo ganador según la métrica más robusta de generalización (\textbf{LightGBM}, $\text{CV-5 F1-Macro} = 0.7496$), ya no es necesario retener el $20\%$ de los datos etiquetados como examen. Por consiguiente, se instancia un modelo \textbf{LightGBM} nuevo con exactamente los mismos hiperparámetros validados y se entrena sobre el \textbf{100\% de las $184$ edificaciones verificadas} para maximizar la evidencia estadística disponible. Finalmente, este modelo reentrenado clasifica las \textbf{$468$ edificaciones sin etiqueta} de OpenStreetMap, integrando etiquetas verificadas y predichas en el archivo \texttt{puno\_buildings\_clasificados.geojson} (Tabla~\ref{tab:imputacion_micro}).
+Una vez completada la evaluación comparativa y seleccionado el modelo ganador según la métrica más robusta de generalización (\textbf{XGBoost}, $\text{CV-5 F1-Macro} = 0.7275$), ya no es necesario retener el $25\%$ de los datos etiquetados como examen. Por consiguiente, se instancia un modelo \textbf{XGBoost} nuevo con exactamente los mismos hiperparámetros validados y se entrena sobre el \textbf{100\% de las $184$ edificaciones verificadas} para maximizar la evidencia estadística disponible. Finalmente, este modelo reentrenado clasifica las \textbf{$468$ edificaciones sin etiqueta} de OpenStreetMap, integrando etiquetas verificadas y predichas en el archivo \texttt{puno\_buildings\_clasificados.geojson} (Tabla~\ref{tab:imputacion_micro}).
 
 \begin{table}[H]
     \centering
-    \caption{Distribución final de las $652$ edificaciones del Distrito de Puno tras la imputación con LightGBM.}
+    \caption{Distribución final de las $652$ edificaciones del Distrito de Puno tras la imputación con XGBoost.}
     \label{tab:imputacion_micro}
     \setlength{\tabcolsep}{7pt}
     \small
@@ -549,12 +549,12 @@ Una vez completada la evaluación comparativa y seleccionado el modelo ganador s
     \begin{tabular}{lrrr}
         \toprule
         \rowcolor{verdeHeader}
-        \textcolor{white}{\textbf{Categoría Final (\texttt{clase\_final})}} & \textcolor{white}{\textbf{Verificado (OSM)}} & \textcolor{white}{\textbf{Predicho (ML — LightGBM)}} & \textcolor{white}{\textbf{Total Edificaciones}} \\
+        \textcolor{white}{\textbf{Categoría Final (\texttt{clase\_final})}} & \textcolor{white}{\textbf{Verificado (OSM)}} & \textcolor{white}{\textbf{Predicho (ML — XGBoost)}} & \textcolor{white}{\textbf{Total Edificaciones}} \\
         \midrule
-        \texttt{Institucional} & 60 & 227 & \textbf{287} ($44.0\%$) \\
+        \texttt{Institucional} & 60 & 221 & \textbf{281} ($43.1\%$) \\
         \rowcolor{verdeSuave!50}
-        \texttt{Comercial\_Servicios} & 51 & 144 & \textbf{195} ($29.9\%$) \\
-        \texttt{Residencial} & 73 & 97 & \textbf{170} ($26.1\%$) \\
+        \texttt{Residencial} & 73 & 130 & \textbf{203} ($31.1\%$) \\
+        \texttt{Comercial\_Servicios} & 51 & 117 & \textbf{168} ($25.8\%$) \\
         \midrule
         \rowcolor{verdeSuave}
         \textbf{Total Distrito de Puno} & \textbf{184} ($28.2\%$) & \textbf{468} ($71.8\%$) & \textbf{652} ($100.0\%$) \\
@@ -568,7 +568,7 @@ La Figura~\ref{fig:mapa_micro_folium} muestra la vista del mapa interactivo gene
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.96\textwidth]{figures/Nivel_Micro_Mapa.png}
-    \caption{Mapa interactivo del Nivel Micro mostrando la clasificación de las $652$ edificaciones de Puno con distinción visual entre etiquetas verificadas en OSM (borde negro sólido) y predichas por LightGBM.}
+    \caption{Mapa interactivo del Nivel Micro mostrando la clasificación de las $652$ edificaciones de Puno con distinción visual entre etiquetas verificadas en OSM (borde negro sólido) y predichas por el modelo ganador.}
     \label{fig:mapa_micro_folium}
 \end{figure}
 
@@ -648,40 +648,40 @@ La Tabla~\ref{tab:medianas_macro} resume las medianas de las variables más disc
 \end{table}
 
 
-\subsection{Validación (80\% Train / 20\% Test + 5-Fold CV)}
+\subsection{Validación (75\% Train / 25\% Test + 5-Fold CV sobre Train)}
 
-Manteniendo el mismo rigor metodológico del Nivel Micro, las $1{,}009$ celdas verificadas se dividieron estratificadamente en \textbf{80\% Entrenamiento ($807$ celdas)} y \textbf{20\% Prueba ($202$ celdas como examen final)}, combinadas con \textbf{Validación Cruzada Estratificada 5-Fold}, dejando las $1{,}091$ celdas sin etiqueta estrictamente apartadas para la imputación final (Figura~\ref{fig:nb03_flujo}).
+Manteniendo el mismo rigor metodológico del Nivel Micro, las $1{,}009$ celdas verificadas se dividieron estratificadamente en \textbf{75\% Entrenamiento ($756$ celdas)} y \textbf{25\% Prueba ($253$ celdas como examen final)}, aplicando la \textbf{Validación Cruzada Estratificada 5-Fold} estrictamente sobre el conjunto de entrenamiento (sin tocar el 25\% de prueba) y dejando las $1{,}091$ celdas sin etiqueta estrictamente apartadas para la imputación final (Figura~\ref{fig:nb03_flujo}).
 
 Para compensar el desbalanceo de clases se incorporaron pesos inversamente proporcionales a la frecuencia.
 \begin{equation}
     w_k = \frac{N}{K \cdot N_k}
     \label{eq:balanceo_macro}
 \end{equation}
-donde $N = 807$ es el tamaño de entrenamiento y $K = 4$ clases. Aplicando la ecuación~(\ref{eq:balanceo_macro}), los pesos exactos resultantes fueron: \texttt{Areas\_Verdes\_Recreacion} ($w = 1.978$), \texttt{Equipamiento\_Productivo} ($w = 1.695$), \texttt{Rural\_Agricola\_Natural} ($w = 1.517$) y \texttt{Urbano\_Residencial} ($w = 0.445$). Así, equivocarse en una celda de áreas verdes penaliza $4.4\times$ más que equivocarse en una celda residencial, obligando a los cuatro modelos a clasificar bien las cuatro zonas y evaluándolos con \textbf{F1-Score Macro} y \textbf{Balanced Accuracy}.
+donde $N = 756$ es el tamaño de entrenamiento y $K = 4$ clases. Aplicando la ecuación~(\ref{eq:balanceo_macro}), los pesos exactos resultantes fueron: \texttt{Areas\_Verdes\_Recreacion} ($w = 1.989$), \texttt{Equipamiento\_Productivo} ($w = 1.688$), \texttt{Rural\_Agricola\_Natural} ($w = 1.512$) y \texttt{Urbano\_Residencial} ($w = 0.446$). Así, equivocarse en una celda de áreas verdes penaliza $4.5\times$ más que equivocarse en una celda residencial, obligando a los cuatro modelos a clasificar bien las cuatro zonas y evaluándolos con \textbf{F1-Score Macro} y \textbf{Balanced Accuracy}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.98\textwidth]{figures/03_flujo_validacion_macro.png}
-    \caption{Flujo de validación estratificada ($807$ entrenamiento, $202$ examen final y 5-Fold CV con balanceo de clases $w_k$) separado de la imputación final de las $1{,}091$ celdas sin etiqueta.}
+    \caption{Flujo de validación estratificada ($756$ entrenamiento con 5-Fold CV interno y balanceo de clases $w_k$, $253$ examen final) separado de la imputación final de las $1{,}091$ celdas sin etiqueta.}
     \label{fig:nb03_flujo}
 \end{figure}
 
 \subsection{Experimento de Poda y Comparativa de los 4 Modelos (Nivel Macro)}
 
-Al variar \texttt{max\_depth} entre $2$ y $12$ en 5-Fold CV sobre el conjunto de entrenamiento (Figura~\ref{fig:nb03_poda}), tanto Gini como Entropía alcanzan su punto máximo de generalización exactamente en \textbf{\texttt{max\_depth = 6}} ($\text{F1} = 0.6033$ en Gini y $0.6014$ en Entropía). Con profundidades menores ($2\text{–}4$) existe subajuste ante la complejidad de $17$ variables y $4$ zonas; por encima de profundidad $6$, el desempeño desciende por sobreajuste.
+Al variar \texttt{max\_depth} entre $2$ y $12$ en 5-Fold CV sobre el 75\% de entrenamiento (Figura~\ref{fig:nb03_poda}), \textbf{Gini} alcanza su punto máximo de generalización en \textbf{\texttt{max\_depth = 6}} ($\text{CV-5 F1} = 0.6655$, $25$ hojas), mientras que \textbf{Entropía} alcanza su máximo en \textbf{\texttt{max\_depth = 8}} ($\text{CV-5 F1} = 0.6393$, $51$ hojas). Con profundidades menores ($2\text{–}4$) existe subajuste ante la complejidad de $17$ variables y $4$ zonas; por encima de la profundidad óptima, el desempeño desciende por sobreajuste.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.82\textwidth]{figures/03_poda_gini_vs_entropia_macro.png}
-    \caption{Experimento de poda (\texttt{max\_depth} de $2$ a $12$) comparando Gini y Entropía en el Nivel Macro mediante F1-Score Macro (5-Fold CV).}
+    \caption{Experimento de poda (\texttt{max\_depth} de $2$ a $12$) comparando Gini y Entropía en el Nivel Macro mediante F1-Score Macro (5-Fold CV sobre el 75\% de entrenamiento).}
     \label{fig:nb03_poda}
 \end{figure}
 
-La Tabla~\ref{tab:resultados_macro_nb03} presenta el benchmark completo de los cuatro modelos obligatorios (cinco configuraciones) evaluados en Test ($n=202$) y en Validación Cruzada 5-Fold.
+La Tabla~\ref{tab:resultados_macro_nb03} presenta el benchmark completo de los cuatro modelos obligatorios (cinco configuraciones) evaluados en Test ($25\%$, $n=253$) y en Validación Cruzada 5-Fold sobre el 75\% de entrenamiento.
 
 \begin{table}[H]
     \centering
-    \caption{Tabla comparativa de métricas y tiempo de entrenamiento de los 4 modelos (5 configuraciones) — Nivel Macro.}
+    \caption{Tabla comparativa de métricas y tiempo de entrenamiento de los 4 modelos (5 configuraciones) — Nivel Macro (75/25 + 5-Fold CV sobre Train).}
     \label{tab:resultados_macro_nb03}
     \setlength{\tabcolsep}{3.5pt}
     \footnotesize
@@ -691,13 +691,13 @@ La Tabla~\ref{tab:resultados_macro_nb03} presenta el benchmark completo de los c
         \rowcolor{verdeHeader}
         \textcolor{white}{\textbf{Modelo}} & \textcolor{white}{\textbf{Test Acc}} & \textcolor{white}{\textbf{Bal. Acc}} & \textcolor{white}{\textbf{Prec (M)}} & \textcolor{white}{\textbf{Rec (M)}} & \textcolor{white}{\textbf{Test F1 (M)}} & \textcolor{white}{\textbf{CV-5 Acc}} & \textcolor{white}{\textbf{CV-5 F1 (M)}} & \textcolor{white}{\textbf{Tiempo (ms)}} \\
         \midrule
-        \textbf{Random Forest} \textit{(Ganador CV)} & 0.7426 & 0.7023 & 0.6792 & 0.7023 & 0.6803 & 0.7681 & \textbf{0.6980} & 475.37 \\
+        \textbf{XGBoost} \textit{(Ganador CV y Test)} & \textbf{0.7787} & \textbf{0.7286} & \textbf{0.7095} & \textbf{0.7286} & \textbf{0.7133} & \textbf{0.7778} & \textbf{0.7029} & 707.93 \\
         \rowcolor{verdeSuave!50}
-        \textbf{XGBoost} \textit{(Ganador Test)} & \textbf{0.7772} & \textbf{0.7189} & \textbf{0.7065} & \textbf{0.7189} & \textbf{0.7120} & \textbf{0.7760} & 0.6977 & 733.07 \\
-        LightGBM & 0.7574 & 0.6728 & 0.6619 & 0.6728 & 0.6670 & 0.7691 & 0.6767 & 310.12 \\
+        LightGBM & \textbf{0.7787} & 0.7123 & 0.6966 & 0.7123 & 0.7040 & \textbf{0.7778} & 0.6991 & 308.63 \\
+        Random Forest & 0.7549 & 0.7049 & 0.6782 & 0.7049 & 0.6854 & 0.7685 & 0.6969 & 730.84 \\
         \rowcolor{verdeSuave!50}
-        DecisionTree (Gini) & 0.6535 & 0.6221 & 0.6039 & 0.6221 & 0.5996 & 0.6809 & 0.6318 & \textbf{5.20} \\
-        DecisionTree (Entropía) & 0.6634 & 0.6205 & 0.5806 & 0.6205 & 0.5841 & 0.6671 & 0.5999 & 7.92 \\
+        DecisionTree (Gini) & 0.6838 & 0.6293 & 0.6217 & 0.6293 & 0.6161 & 0.7169 & 0.6655 & \textbf{5.07} \\
+        DecisionTree (Entropía) & 0.6640 & 0.6642 & 0.6195 & 0.6642 & 0.6179 & 0.7037 & 0.6393 & 8.13 \\
         \bottomrule
     \end{tabular}
     \end{adjustbox}
@@ -711,14 +711,14 @@ La Tabla~\ref{tab:resultados_macro_nb03} presenta el benchmark completo de los c
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/03_arbol_gini_completo.png}
-    \caption{Árbol completo de \texttt{DecisionTreeClassifier (Gini)} en el Nivel Macro (profundidad $= 6$, $27$ hojas terminales).}
+    \caption{Árbol completo de \texttt{DecisionTreeClassifier (Gini)} en el Nivel Macro (profundidad $= 6$, $25$ hojas terminales).}
     \label{fig:nb03_gini}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/03_arbol_entropia_completo.png}
-    \caption{Árbol completo de \texttt{DecisionTreeClassifier (Entropía)} en el Nivel Macro (profundidad $= 6$, $28$ hojas terminales).}
+    \caption{Árbol completo de \texttt{DecisionTreeClassifier (Entropía)} en el Nivel Macro (profundidad $= 8$, $51$ hojas terminales).}
     \label{fig:nb03_entropia}
 \end{figure}
 
@@ -729,14 +729,14 @@ En el Nivel Macro, Random Forest entrena \textbf{$250$ árboles independientes e
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/03_arbol_rf_001_completo.png}
-    \caption{Primer árbol completo de \textbf{Random Forest} en el Nivel Macro (Árbol \#1 de $250$, profundidad $= 10$, $77$ hojas terminales).}
+    \caption{Primer árbol completo de \textbf{Random Forest} en el Nivel Macro (Árbol \#1 de $250$, profundidad $= 11$, $81$ hojas terminales).}
     \label{fig:nb03_rf1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/03_arbol_rf_250_completo.png}
-    \caption{Último árbol completo de \textbf{Random Forest} en el Nivel Macro (Árbol \#250 de $250$, profundidad $= 12$, $73$ hojas terminales).}
+    \caption{Último árbol completo de \textbf{Random Forest} en el Nivel Macro (Árbol \#250 de $250$, profundidad $= 12$, $68$ hojas terminales).}
     \label{fig:nb03_rf250}
 \end{figure}
 
@@ -752,21 +752,21 @@ En el Nivel Macro, Random Forest entrena \textbf{$250$ árboles independientes e
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.96\textwidth]{figures/03_arbol_xgboost_ronda200_completo.png}
-    \caption{Árbol completo de \textbf{XGBoost} en la Ronda Final~\#200 (clase \texttt{Urbano\_Residencial}, $13$ hojas terminales).}
+    \caption{Árbol completo de \textbf{XGBoost} en la Ronda Final~\#200 (clase \texttt{Urbano\_Residencial}, $10$ hojas terminales).}
     \label{fig:nb03_xgb200}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/03_arbol_lightgbm_ronda2_completo.png}
-    \caption{Árbol completo de \textbf{LightGBM} en la Ronda~2 del Nivel Macro (clase \texttt{Urbano\_Residencial}, $23$ hojas terminales, crecimiento \textit{leaf-wise}).}
+    \caption{Árbol completo de \textbf{LightGBM} en la Ronda~2 del Nivel Macro (clase \texttt{Urbano\_Residencial}, $25$ hojas terminales, crecimiento \textit{leaf-wise}).}
     \label{fig:nb03_lgbm2}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{figures/03_arbol_lightgbm_ronda200_completo.png}
-    \caption{Árbol completo de \textbf{LightGBM} en la Ronda Final~\#200 (clase \texttt{Areas\_Verdes\_Recreacion}, $10$ hojas terminales): evidencia la regla geográfica \texttt{dist\_lago <= 41.7 m} en la raíz.}
+    \caption{Árbol completo de \textbf{LightGBM} en la Ronda Final~\#200 (clase \texttt{Areas\_Verdes\_Recreacion}, $7$ hojas terminales): evidencia la regla geográfica \texttt{dist\_plaza <= 457.1 m} en la raíz.}
     \label{fig:nb03_lgbm200}
 \end{figure}
 
@@ -775,7 +775,7 @@ En el Nivel Macro, Random Forest entrena \textbf{$250$ árboles independientes e
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\textwidth]{figures/03_matrices_confusion_macro.png}
-    \caption{Matrices de confusión $4 \times 4$ en Test ($20\%$, $n = 202$ celdas) para las cinco configuraciones del Nivel Macro.}
+    \caption{Matrices de confusión $4 \times 4$ en Test ($25\%$, $n = 253$ celdas) para las cinco configuraciones del Nivel Macro.}
     \label{fig:nb03_cm}
 \end{figure}
 
@@ -789,11 +789,11 @@ En el Nivel Macro, Random Forest entrena \textbf{$250$ árboles independientes e
 
 \subsection{Reentrenamiento e Imputación Final}
 
-Siguiendo el mismo protocolo riguroso de reentrenamiento aplicado en el Nivel Micro, una vez elegido el ganador por \texttt{CV-5 F1-Macro} (\textbf{Random Forest}, $0.6980$), se instanció un modelo limpio con exactamente los mismos hiperparámetros y se reentrenó sobre el \textbf{100\% de las $1{,}009$ celdas verificadas}. Posteriormente se predijo la zonificación de las \textbf{$1{,}091$ celdas activas sin etiqueta}, consolidando la capa completa de $2{,}100$ celdas en \texttt{puno\_zonificacion\_macro.geojson} (Tabla~\ref{tab:imputacion_macro}).
+Siguiendo el mismo protocolo riguroso de reentrenamiento aplicado en el Nivel Micro, una vez elegido el ganador por \texttt{CV-5 F1-Macro} (\textbf{XGBoost}, $0.7029$), se instanció un modelo limpio con exactamente los mismos hiperparámetros y pesos balanceados y se reentrenó sobre el \textbf{100\% de las $1{,}009$ celdas verificadas}. Posteriormente se predijo la zonificación de las \textbf{$1{,}091$ celdas activas sin etiqueta}, consolidando la capa completa de $2{,}100$ celdas en \texttt{puno\_zonificacion\_macro.geojson} (Tabla~\ref{tab:imputacion_macro}).
 
 \begin{table}[H]
     \centering
-    \caption{Distribución final de las $2{,}100$ celdas activas ($250\text{ m} \times 250\text{ m}$) del Distrito de Puno tras la imputación con Random Forest.}
+    \caption{Distribución final de las $2{,}100$ celdas activas ($250\text{ m} \times 250\text{ m}$) del Distrito de Puno tras la imputación con XGBoost.}
     \label{tab:imputacion_macro}
     \setlength{\tabcolsep}{7pt}
     \small
@@ -801,12 +801,12 @@ Siguiendo el mismo protocolo riguroso de reentrenamiento aplicado en el Nivel Mi
     \begin{tabular}{lrrr}
         \toprule
         \rowcolor{verdeHeader}
-        \textcolor{white}{\textbf{Zonificación Final (\texttt{zona\_final})}} & \textcolor{white}{\textbf{Verificado (OSM)}} & \textcolor{white}{\textbf{Predicho (ML — RF)}} & \textcolor{white}{\textbf{Total Celdas}} \\
+        \textcolor{white}{\textbf{Zonificación Final (\texttt{zona\_final})}} & \textcolor{white}{\textbf{Verificado (OSM)}} & \textcolor{white}{\textbf{Predicho (ML — XGBoost)}} & \textcolor{white}{\textbf{Total Celdas}} \\
         \midrule
-        \texttt{Urbano\_Residencial} & 566 & 404 & \textbf{970} ($46.2\%$) \\
+        \texttt{Urbano\_Residencial} & 566 & 468 & \textbf{1{,}034} ($49.2\%$) \\
         \rowcolor{verdeSuave!50}
-        \texttt{Rural\_Agricola\_Natural} & 167 & 632 & \textbf{799} ($38.0\%$) \\
-        \texttt{Equipamiento\_Productivo} & 149 & 45 & \textbf{194} ($9.2\%$) \\
+        \texttt{Rural\_Agricola\_Natural} & 167 & 554 & \textbf{721} ($34.3\%$) \\
+        \texttt{Equipamiento\_Productivo} & 149 & 59 & \textbf{208} ($9.9\%$) \\
         \rowcolor{verdeSuave!50}
         \texttt{Areas\_Verdes\_Recreacion} & 127 & 10 & \textbf{137} ($6.5\%$) \\
         \midrule
@@ -822,7 +822,7 @@ La Figura~\ref{fig:mapa_macro_folium} presenta el mapa interactivo generado en F
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.96\textwidth]{figures/Nivel_Macro_Mapa.png}
-    \caption{Mapa interactivo del Nivel Macro (\texttt{mapa\_macro\_zonificacion.html}) mostrando la zonificación de las $2{,}100$ celdas de $250\text{ m} \times 250\text{ m}$, diferenciando las $1{,}009$ celdas verificadas en OSM (borde sólido oscuro) de las $1{,}091$ predichas por Random Forest (borde punteado).}
+    \caption{Mapa interactivo del Nivel Macro (\texttt{mapa\_macro\_zonificacion.html}) mostrando la zonificación de las $2{,}100$ celdas de $250\text{ m} \times 250\text{ m}$, diferenciando las $1{,}009$ celdas verificadas en OSM (borde sólido oscuro) de las $1{,}091$ predichas por el modelo ganador (borde punteado).}
     \label{fig:mapa_macro_folium}
 \end{figure}
 
@@ -840,7 +840,7 @@ La Tabla~\ref{tab:comparativa_global} reúne el desempeño consolidado de las ci
 
 \begin{table}[H]
     \centering
-    \caption{Tabla comparativa global de rendimiento y tiempo de entrenamiento en Nivel Micro ($n_{\text{test}}=37$) y Nivel Macro ($n_{\text{test}}=202$).}
+    \caption{Tabla comparativa global de rendimiento y tiempo de entrenamiento en Nivel Micro ($n_{\text{test}}=46$) y Nivel Macro ($n_{\text{test}}=253$) bajo partición 75/25 y 5-Fold CV sobre el 75\% de entrenamiento.}
     \label{tab:comparativa_global}
     \setlength{\tabcolsep}{4pt}
     \footnotesize
@@ -851,18 +851,18 @@ La Tabla~\ref{tab:comparativa_global} reúne el desempeño consolidado de las ci
         \textcolor{white}{\textbf{Escala}} & \textcolor{white}{\textbf{Modelo}} & \textcolor{white}{\textbf{Paradigma}} & \textcolor{white}{\textbf{Test Acc}} & \textcolor{white}{\textbf{Test F1(M)}} & \textcolor{white}{\textbf{CV-5 Acc}} & \textcolor{white}{\textbf{CV-5 F1(M)}} & \textcolor{white}{\textbf{Tiempo (ms)}} \\
         \midrule
         \rowcolor{azulSuave!65}
-        Micro & \textbf{LightGBM} (Ganador CV) & Leaf-wise Boosting & 0.8108 & 0.7874 & \textbf{0.7667} & \textbf{0.7496} & 63.35 \\
-        Micro & \textbf{Random Forest} (Mejor Test) & Ensamble Bagging & \textbf{0.8378} & \textbf{0.8115} & 0.7664 & 0.7465 & 408.88 \\
-        Micro & XGBoost & Gradient Boosting & 0.7838 & 0.7545 & 0.7395 & 0.7160 & 254.47 \\
-        Micro & DecisionTree (Entropía) & Árbol Simple & 0.6757 & 0.6204 & 0.7009 & 0.6744 & 1.87 \\
-        Micro & DecisionTree (Gini) & Árbol Simple & 0.8108 & 0.7831 & 0.6793 & 0.6517 & \textbf{1.76} \\
+        Micro & \textbf{XGBoost} (Ganador CV) & Gradient Boosting & 0.7826 & 0.7593 & \textbf{0.7540} & \textbf{0.7275} & 211.17 \\
+        Micro & \textbf{Random Forest} (Empate Test) & Ensamble Bagging & \textbf{0.8261} & 0.8046 & \textbf{0.7540} & 0.7264 & 406.26 \\
+        Micro & DecisionTree (Gini) & Árbol Simple & 0.7826 & 0.7498 & 0.7386 & 0.7115 & 2.22 \\
+        Micro & DecisionTree (Entropía) & Árbol Simple & 0.7826 & 0.7498 & 0.7315 & 0.7013 & \textbf{1.66} \\
+        Micro & \textbf{LightGBM} (Mejor Test F1) & Leaf-wise Boosting & \textbf{0.8261} & \textbf{0.8087} & 0.7251 & 0.6882 & 40.16 \\
         \midrule
         \rowcolor{azulSuave!65}
-        Macro & \textbf{Random Forest} (Ganador CV) & Ensamble Bagging & 0.7426 & 0.6803 & 0.7681 & \textbf{0.6980} & 475.37 \\
-        Macro & \textbf{XGBoost} (Mejor Test) & Gradient Boosting & \textbf{0.7772} & \textbf{0.7120} & \textbf{0.7760} & 0.6977 & 733.07 \\
-        Macro & LightGBM & Leaf-wise Boosting & 0.7574 & 0.6670 & 0.7691 & 0.6767 & 310.12 \\
-        Macro & DecisionTree (Gini) & Árbol Simple & 0.6535 & 0.5996 & 0.6809 & 0.6318 & \textbf{5.20} \\
-        Macro & DecisionTree (Entropía) & Árbol Simple & 0.6634 & 0.5841 & 0.6671 & 0.5999 & 7.92 \\
+        Macro & \textbf{XGBoost} (Ganador CV y Test) & Gradient Boosting & \textbf{0.7787} & \textbf{0.7133} & \textbf{0.7778} & \textbf{0.7029} & 707.93 \\
+        Macro & LightGBM & Leaf-wise Boosting & \textbf{0.7787} & 0.7040 & \textbf{0.7778} & 0.6991 & 308.63 \\
+        Macro & Random Forest & Ensamble Bagging & 0.7549 & 0.6854 & 0.7685 & 0.6969 & 730.84 \\
+        Macro & DecisionTree (Gini) & Árbol Simple & 0.6838 & 0.6161 & 0.7169 & 0.6655 & \textbf{5.07} \\
+        Macro & DecisionTree (Entropía) & Árbol Simple & 0.6640 & 0.6179 & 0.7037 & 0.6393 & 8.13 \\
         \bottomrule
     \end{tabular}
     \end{adjustbox}
@@ -870,7 +870,7 @@ La Tabla~\ref{tab:comparativa_global} reúne el desempeño consolidado de las ci
 
 \begin{table}[H]
     \centering
-    \caption{Desglose completo de métricas en Test (\textit{Accuracy}, \textit{Balanced Accuracy}, \textit{Macro} y \textit{Weighted}) en ambas escalas.}
+    \caption{Desglose completo de métricas en Test ($25\%$: \textit{Accuracy}, \textit{Balanced Accuracy}, \textit{Macro} y \textit{Weighted}) en ambas escalas.}
     \label{tab:detallada_global}
     \setlength{\tabcolsep}{4pt}
     \footnotesize
@@ -880,22 +880,22 @@ La Tabla~\ref{tab:comparativa_global} reúne el desempeño consolidado de las ci
         \rowcolor{verdeHeader}
         \textcolor{white}{\textbf{Escala}} & \textcolor{white}{\textbf{Modelo}} & \textcolor{white}{\textbf{Acc.}} & \textcolor{white}{\textbf{Bal. Acc}} & \textcolor{white}{\textbf{Prec(M)}} & \textcolor{white}{\textbf{Prec(W)}} & \textcolor{white}{\textbf{Rec(M)}} & \textcolor{white}{\textbf{F1(M)}} & \textcolor{white}{\textbf{F1(W)}} \\
         \midrule
-        Micro & DecisionTree (Gini) & 0.8108 & 0.8000 & 0.8125 & 0.8318 & 0.8000 & 0.7831 & 0.7999 \\
+        Micro & DecisionTree (Gini) & 0.7826 & 0.7744 & 0.8295 & 0.8318 & 0.7744 & 0.7498 & 0.7560 \\
         \rowcolor{verdeSuave!50}
-        Micro & DecisionTree (Entropía) & 0.6757 & 0.6500 & 0.6347 & 0.6684 & 0.6500 & 0.6204 & 0.6518 \\
-        Micro & \textbf{Random Forest} & \textbf{0.8378} & \textbf{0.8333} & \textbf{0.8681} & \textbf{0.8846} & \textbf{0.8333} & \textbf{0.8115} & \textbf{0.8248} \\
+        Micro & DecisionTree (Entropía) & 0.7826 & 0.7744 & 0.8295 & 0.8318 & 0.7744 & 0.7498 & 0.7560 \\
+        Micro & \textbf{Random Forest} & \textbf{0.8261} & \textbf{0.8188} & \textbf{0.8343} & \textbf{0.8490} & \textbf{0.8188} & 0.8046 & 0.8169 \\
         \rowcolor{verdeSuave!50}
-        Micro & XGBoost & 0.7838 & 0.7667 & 0.7676 & 0.7896 & 0.7667 & 0.7545 & 0.7749 \\
-        Micro & LightGBM & 0.8108 & 0.7889 & 0.7879 & 0.8133 & 0.7889 & 0.7874 & 0.8112 \\
+        Micro & XGBoost & 0.7826 & 0.7675 & 0.7665 & 0.7845 & 0.7675 & 0.7593 & 0.7763 \\
+        Micro & \textbf{LightGBM} & \textbf{0.8261} & 0.8085 & 0.8119 & 0.8203 & 0.8085 & \textbf{0.8087} & \textbf{0.8216} \\
         \midrule
         \rowcolor{verdeSuave!50}
-        Macro & DecisionTree (Gini) & 0.6535 & 0.6221 & 0.6039 & 0.7468 & 0.6221 & 0.5996 & 0.6851 \\
-        Macro & DecisionTree (Entropía) & 0.6634 & 0.6205 & 0.5806 & 0.7283 & 0.6205 & 0.5841 & 0.6794 \\
+        Macro & DecisionTree (Gini) & 0.6838 & 0.6293 & 0.6217 & 0.7592 & 0.6293 & 0.6161 & 0.7123 \\
+        Macro & DecisionTree (Entropía) & 0.6640 & 0.6642 & 0.6195 & 0.7742 & 0.6642 & 0.6179 & 0.6929 \\
         \rowcolor{verdeSuave!50}
-        Macro & Random Forest & 0.7426 & 0.7023 & 0.6792 & \textbf{0.7944} & 0.7023 & 0.6803 & 0.7604 \\
-        Macro & \textbf{XGBoost} & \textbf{0.7772} & \textbf{0.7189} & \textbf{0.7065} & 0.7866 & \textbf{0.7189} & \textbf{0.7120} & \textbf{0.7814} \\
+        Macro & Random Forest & 0.7549 & 0.7049 & 0.6782 & 0.7961 & 0.7049 & 0.6854 & 0.7702 \\
+        Macro & \textbf{XGBoost} & \textbf{0.7787} & \textbf{0.7286} & \textbf{0.7095} & \textbf{0.7987} & \textbf{0.7286} & \textbf{0.7133} & \textbf{0.7850} \\
         \rowcolor{verdeSuave!50}
-        Macro & LightGBM & 0.7574 & 0.6728 & 0.6619 & 0.7630 & 0.6728 & 0.6670 & 0.7599 \\
+        Macro & LightGBM & \textbf{0.7787} & 0.7123 & 0.6966 & 0.7845 & 0.7123 & 0.7040 & 0.7812 \\
         \bottomrule
     \end{tabular}
     \end{adjustbox}
@@ -904,13 +904,13 @@ La Tabla~\ref{tab:comparativa_global} reúne el desempeño consolidado de las ci
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.98\textwidth]{figures/04_comparativa_global_modelos.png}
-    \caption{Comparativa global de los cuatro paradigmas en Nivel Micro y Nivel Macro: validación cruzada (Panel A), conjunto de prueba independiente (Panel B) y frontera de compromiso entre rendimiento y tiempo de entrenamiento en escala logarítmica (Panel C).}
+    \caption{Comparativa global de los cuatro paradigmas en Nivel Micro y Nivel Macro: validación cruzada (Panel A), conjunto de prueba independiente del 25\% (Panel B) y frontera de compromiso entre rendimiento y tiempo de entrenamiento en escala logarítmica (Panel C).}
     \label{fig:nb04_global}
 \end{figure}
 
 \begin{table}[H]
     \centering
-    \caption{Distribución de consenso y discrepancias entre los cuatro paradigmas sobre los conjuntos de prueba independientes.}
+    \caption{Distribución de consenso y discrepancias entre los cuatro paradigmas sobre los conjuntos de prueba independientes (25\% Test).}
     \label{tab:consenso_test}
     \setlength{\tabcolsep}{7pt}
     \small
@@ -918,15 +918,15 @@ La Tabla~\ref{tab:comparativa_global} reúne el desempeño consolidado de las ci
     \begin{tabular}{lrrrr}
         \toprule
         \rowcolor{verdeHeader}
-        \textcolor{white}{\textbf{Estado de Evaluación en Test}} & \textcolor{white}{\textbf{Micro ($n=37$)}} & \textcolor{white}{\textbf{Micro ($\%$)}} & \textcolor{white}{\textbf{Macro ($n=202$)}} & \textcolor{white}{\textbf{Macro ($\%$)}} \\
+        \textcolor{white}{\textbf{Estado de Evaluación en Test}} & \textcolor{white}{\textbf{Micro ($n=46$)}} & \textcolor{white}{\textbf{Micro ($\%$)}} & \textcolor{white}{\textbf{Macro ($n=253$)}} & \textcolor{white}{\textbf{Macro ($\%$)}} \\
         \midrule
-        Acierto Unánime ($4/4$ modelos aciertan) & \textbf{27} & \textbf{73.0\%} & \textbf{115} & \textbf{56.9\%} \\
+        Acierto Unánime ($4/4$ modelos aciertan) & \textbf{31} & \textbf{67.4\%} & \textbf{158} & \textbf{62.5\%} \\
         \rowcolor{verdeSuave!50}
-        Discrepancia entre Modelos ($1/4$ a $3/4$) & 8 & 21.6\% & 59 & 29.2\% \\
-        Error Unánime ($0/4$ modelos aciertan) & 2 & 5.4\% & 28 & 13.9\% \\
+        Discrepancia entre Modelos ($1/4$ a $3/4$) & 12 & 26.1\% & 56 & 22.1\% \\
+        Error Unánime ($0/4$ modelos aciertan) & 3 & 6.5\% & 39 & 15.4\% \\
         \midrule
         \rowcolor{verdeSuave}
-        \textbf{Total Observaciones en Test} & \textbf{37} & \textbf{100.0\%} & \textbf{202} & \textbf{100.0\%} \\
+        \textbf{Total Observaciones en Test} & \textbf{46} & \textbf{100.0\%} & \textbf{253} & \textbf{100.0\%} \\
         \bottomrule
     \end{tabular}
     \end{adjustbox}
@@ -935,7 +935,7 @@ La Tabla~\ref{tab:comparativa_global} reúne el desempeño consolidado de las ci
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.96\textwidth]{figures/04_aciertos_discrepancias_test.png}
-    \caption{Proporción de aciertos unánimes ($4/4$), discrepancias parciales y errores unánimes ($0/4$) entre los cuatro modelos en Test (Micro y Macro).}
+    \caption{Proporción de aciertos unánimes ($4/4$), discrepancias parciales y errores unánimes ($0/4$) entre los cuatro modelos en Test (25\%: Micro y Macro).}
     \label{fig:nb04_discrepancias}
 \end{figure}
 
@@ -955,15 +955,15 @@ Para validar si las predicciones independientes de ambos niveles producen una le
         \rowcolor{verdeHeader}
         \textcolor{white}{\textbf{Zona Macro (\texttt{zona\_final})}} & \textcolor{white}{\textbf{Comercial / Serv.}} & \textcolor{white}{\textbf{Institucional}} & \textcolor{white}{\textbf{Residencial}} & \textcolor{white}{\textbf{Total Edif.}} \\
         \midrule
-        \texttt{Equipamiento\_Productivo} & 133 ($30.0\%$) & \textbf{189} ($42.6\%$) & 122 ($27.5\%$) & \textbf{444} ($68.1\%$) \\
+        \texttt{Equipamiento\_Productivo} & 119 ($26.7\%$) & \textbf{186} ($41.8\%$) & 140 ($31.5\%$) & \textbf{445} ($68.3\%$) \\
         \rowcolor{verdeSuave!50}
-        \texttt{Areas\_Verdes\_Recreacion} & 38 ($27.1\%$) & \textbf{73} ($52.1\%$) & 29 ($20.7\%$) & \textbf{140} ($21.5\%$) \\
-        \texttt{Urbano\_Residencial} & 21 ($48.8\%$) & 17 ($39.5\%$) & 5 ($11.6\%$) & \textbf{43} ($6.6\%$) \\
+        \texttt{Areas\_Verdes\_Recreacion} & 29 ($21.3\%$) & \textbf{64} ($47.1\%$) & 43 ($31.6\%$) & \textbf{136} ($20.9\%$) \\
+        \texttt{Urbano\_Residencial} & 19 ($35.2\%$) & \textbf{29} ($53.7\%$) & 6 ($11.1\%$) & \textbf{54} ($8.3\%$) \\
         \rowcolor{verdeSuave!50}
-        \texttt{Rural\_Agricola\_Natural} & 3 ($12.0\%$) & 8 ($32.0\%$) & \textbf{14} ($56.0\%$) & \textbf{25} ($3.8\%$) \\
+        \texttt{Rural\_Agricola\_Natural} & 1 ($5.9\%$) & 2 ($11.8\%$) & \textbf{14} ($82.4\%$) & \textbf{17} ($2.6\%$) \\
         \midrule
         \rowcolor{verdeSuave}
-        \textbf{Total Edificaciones Micro} & \textbf{195} ($29.9\%$) & \textbf{287} ($44.0\%$) & \textbf{170} ($26.1\%$) & \textbf{652} ($100.0\%$) \\
+        \textbf{Total Edificaciones Micro} & \textbf{168} ($25.8\%$) & \textbf{281} ($43.1\%$) & \textbf{203} ($31.1\%$) & \textbf{652} ($100.0\%$) \\
         \bottomrule
     \end{tabular}
     \end{adjustbox}
@@ -992,8 +992,8 @@ Para validar si las predicciones independientes de ambos niveles producen una le
 
 \begin{enumerate}[leftmargin=0.8cm, itemsep=3pt]
     \item \textbf{Viabilidad de la clasificación urbana multiescala con datos abiertos:} El recorte optimizado de las capas nacionales de OpenStreetMap hacia el límite oficial del Distrito de Puno ($460.41\text{ km}^2$) en proyección métrica \texttt{EPSG:32719} redujo el volumen de trabajo de $\sim 1.5\text{ GB}$ a $3.53\text{ MB}$ en formato \texttt{GeoJSON}, permitiendo construir un flujo reproducible que clasificó e imputó el $100\%$ de las $652$ edificaciones (Nivel Micro) y de las $2{,}100$ celdas territoriales activas de $250\text{ m} \times 250\text{ m}$ (Nivel Macro).
-    \item \textbf{Superioridad consistente de los ensambles frente a los árboles simples:} Los modelos de ensamble superaron a los árboles individuales en ambas escalas al reducir la varianza mediante agregación paralela (\textit{Bagging}) o corrección secuencial de residuos (\textit{Boosting}). En el Nivel Micro, \textbf{LightGBM} lideró la validación cruzada (\texttt{CV-5 F1-Macro} $= 0.7496$ en $63.35\text{ ms}$) y \textbf{Random Forest} encabezó el examen final (\texttt{Test Accuracy} $= 0.8378$, \texttt{F1-Macro} $= 0.8115$). En el Nivel Macro, \textbf{Random Forest} ganó en validación cruzada (\texttt{CV-5 F1-Macro} $= 0.6980$), seguido en empate técnico por \textbf{XGBoost} ($0.6977$), el cual obtuvo el mejor resultado en Test (\texttt{Test Accuracy} $= 0.7772$, \texttt{F1-Macro} $= 0.7120$, \texttt{F1-Weighted} $= 0.7814$).
-    \item \textbf{Importancia de las estructuras de datos espaciales (\texttt{cKDTree}) y coherencia territorial:} La ingeniería de variables basada en \texttt{cKDTree} ($O(\log N)$) junto con la morfología geométrica demostró ser determinante para capturar la estructura real de Puno —identificando la superficie construida, la densidad de servicios locales, la accesibilidad vial, la centralidad hacia la Plaza de Armas y la distancia al Lago Titicaca como los principales factores discriminantes—. El consenso unánime de los cuatro paradigmas ($73.0\%$ en Micro y $56.9\%$ en Macro), los elevados índices $\kappa$ de Cohen y el cruce territorial entre escalas corroboran la solidez del sistema propuesto.
+    \item \textbf{Superioridad consistente de los ensambles frente a los árboles simples (partición 75/25 + 5-Fold CV sobre Train):} Los modelos de ensamble superaron a los árboles individuales en ambas escalas al reducir la varianza mediante agregación paralela (\textit{Bagging}) o corrección secuencial de residuos (\textit{Boosting}). En el Nivel Micro, \textbf{XGBoost} lideró la validación cruzada (\texttt{CV-5 F1-Macro} $= 0.7275$) seguido en empate técnico por \textbf{Random Forest} ($0.7264$), mientras que en el examen final ($25\%$ Test, $n=46$) \textbf{LightGBM} (\texttt{Test Accuracy} $= 0.8261$, \texttt{F1-Macro} $= 0.8087$) y \textbf{Random Forest} (\texttt{Test Accuracy} $= 0.8261$, \texttt{F1-Macro} $= 0.8046$) encabezaron el desempeño. En el Nivel Macro, \textbf{XGBoost} lideró tanto la validación cruzada (\texttt{CV-5 F1-Macro} $= 0.7029$) como el examen final ($25\%$ Test, $n=253$: \texttt{Test Accuracy} $= 0.7787$, \texttt{F1-Macro} $= 0.7133$, \texttt{F1-Weighted} $= 0.7850$), seguido muy de cerca por \textbf{LightGBM} (\texttt{CV-5 F1-Macro} $= 0.6991$, \texttt{Test F1-Macro} $= 0.7040$).
+    \item \textbf{Importancia de las estructuras de datos espaciales (\texttt{cKDTree}) y coherencia territorial:} La ingeniería de variables basada en \texttt{cKDTree} ($O(\log N)$) junto con la morfología geométrica demostró ser determinante para capturar la estructura real de Puno —identificando la superficie construida, la densidad de servicios locales, la accesibilidad vial, la centralidad hacia la Plaza de Armas y la distancia al Lago Titicaca como los principales factores discriminantes—. El consenso unánime de los cuatro paradigmas ($67.4\%$ en Micro y $62.5\%$ en Macro), los elevados índices $\kappa$ de Cohen y el cruce territorial entre escalas corroboran la solidez del sistema propuesto.
 \end{enumerate}
 \newpage
 \section{Limitaciones del Estudio}
@@ -1001,7 +1001,7 @@ Para validar si las predicciones independientes de ambos niveles producen una le
 Durante el desarrollo e interpretación de los resultados se identificaron cuatro limitaciones principales que acotan el alcance actual del proyecto:
 \begin{itemize}[leftmargin=0.8cm, itemsep=2pt]
     \item \textbf{Completitud y sesgo espacial de los datos voluntarios (OSM):} Al provenir de mapeo colaborativo, la capa de edificaciones de Puno contiene únicamente $652$ polígonos digitalizados (concentrados mayoritariamente en el centro histórico y la UNA Puno) y solo $184$ disponen de etiqueta verificable; de forma análoga, el $52.0\%$ de las celdas activas del Nivel Macro carece de etiqueta base de \texttt{landuse}. Esto impide cubrir actualmente las viviendas periféricas aún no trazadas en OSM.
-    \item \textbf{Tamaño muestral acotado en el conjunto de prueba Micro ($n=37$):} Si bien la selección del modelo se protegió mediante validación cruzada estratificada de $5$ particiones, un conjunto de prueba de $37$ edificaciones introduce mayor sensibilidad puntual frente a pocos casos atípicos (como grandes hoteles o complejos deportivos).
+    \item \textbf{Tamaño muestral acotado en el conjunto de prueba Micro ($25\%$, $n=46$):} Si bien la selección del modelo se protegió mediante validación cruzada estratificada de $5$ particiones sobre el $75\%$ de entrenamiento, un conjunto de prueba de $46$ edificaciones introduce mayor sensibilidad puntual frente a pocos casos atípicos (como grandes hoteles o complejos deportivos).
     \item \textbf{Usos mixtos dentro de celdas cuadradas de $250\text{ m} \times 250\text{ m}$:} En el casco urbano consolidado, una cuadrícula de $6.25\text{ hectáreas}$ engloba frecuentemente viviendas, locales comerciales y parques vecinales de forma simultánea, generando una ambigüedad física inherente que explica las confusiones residuales.
     \item \textbf{Ausencia de información vertical, censal y espectral:} Las geometrías vectoriales bidimensionales de OSM no registran altura de edificaciones, número de pisos, densidad poblacional por manzana ni reflectancia satelital, atributos que ayudarían a diferenciar edificaciones multifamiliares, áreas verdes sin etiquetar y bordes periurbanos en consolidación.
 \end{itemize}

@@ -66,28 +66,28 @@ Zonas_Puno/
 │   ├── 01_esquema_datasets_puno.png   <- Ficha técnica visual de variables (X) y variable objetivo (y) Micro/Macro.
 │   ├── 01_radiografia_datos_puno.png  <- Panel 2×2 de diagnóstico y distribución de datos crudos OSM.
 │   ├── 01_mapa_cartografico_puno.png  <- Mapa cartográfico 2 paneles (Distrito 460.4 km² + zoom núcleo urbano crudo).
-│   ├── 02_flujo_validacion_micro.png  <- Diagrama visual Train 80% / Test 20% / 5-Fold CV vs. Imputación (468).
-│   ├── 02_arbol_gini_completo.png     <- Árbol completo DecisionTree Gini (prof. 4, 11 hojas, sin recortes).
-│   ├── 02_arbol_entropia_completo.png <- Árbol completo DecisionTree Entropía (prof. 4, 11 hojas, sin recortes).
-│   ├── 02_arbol_rf_001_completo.png   <- Árbol #1 completo de Random Forest (prof. 7, 22 hojas).
-│   ├── 02_arbol_rf_200_completo.png   <- Árbol #200 completo de Random Forest (último del bosque, 23 hojas).
-│   ├── 02_arbol_xgboost_ronda1_completo.png   <- Árbol completo XGBoost Ronda 1 (level-wise, 11 hojas).
-│   ├── 02_arbol_xgboost_ronda150_completo.png <- Árbol completo XGBoost Ronda Final #150 (convergencia, 6 hojas).
+│   ├── 02_flujo_validacion_micro.png  <- Diagrama visual Train 75% / Test 25% / 5-Fold CV vs. Imputación (468).
+│   ├── 02_arbol_gini_completo.png     <- Árbol completo DecisionTree Gini (prof. 2, 4 hojas, sin recortes).
+│   ├── 02_arbol_entropia_completo.png <- Árbol completo DecisionTree Entropía (prof. 2, 4 hojas, sin recortes).
+│   ├── 02_arbol_rf_001_completo.png   <- Árbol #1 completo de Random Forest (prof. 6, 20 hojas).
+│   ├── 02_arbol_rf_200_completo.png   <- Árbol #200 completo de Random Forest (último del bosque, 20 hojas).
+│   ├── 02_arbol_xgboost_ronda1_completo.png   <- Árbol completo XGBoost Ronda 1 (level-wise, 10 hojas).
+│   ├── 02_arbol_xgboost_ronda150_completo.png <- Árbol completo XGBoost Ronda Final #150 (convergencia, 7 hojas).
 │   ├── 02_arbol_lightgbm_ronda2_completo.png  <- Árbol completo LightGBM Ronda 2 (leaf-wise, 8 hojas).
-│   ├── 02_arbol_lightgbm_ronda150_completo.png<- Árbol completo LightGBM Ronda Final #150 (leaf-wise, 7 hojas).
-│   ├── 02_matrices_confusion_micro.png<- Matrices de confusión en Test (n=37) con Accuracy y F1.
+│   ├── 02_arbol_lightgbm_ronda150_completo.png<- Árbol completo LightGBM Ronda Final #150 (leaf-wise, 10 hojas).
+│   ├── 02_matrices_confusion_micro.png<- Matrices de confusión en Test (25%, n=46) con Accuracy y F1.
 │   ├── 02_feature_importance_micro.png<- Importancia relativa de las 11 variables (Nivel Micro).
 │   ├── 03_grilla_espacial_macro.png   <- Mapa de grilla 250m×250m (2,100 celdas) + desbalanceo de las 4 clases.
-│   ├── 03_flujo_validacion_macro.png  <- Diagrama visual Train 80% / Test 20% + balanceo vs. Imputación (1,091).
-│   ├── 03_arbol_gini_completo.png     <- Árbol completo DecisionTree Gini Macro (prof. 6, 27 hojas).
-│   ├── 03_arbol_entropia_completo.png <- Árbol completo DecisionTree Entropía Macro (prof. 6, 28 hojas).
-│   ├── 03_arbol_rf_001_completo.png   <- Árbol #1 completo de Random Forest Macro (77 hojas).
-│   ├── 03_arbol_rf_250_completo.png   <- Árbol #250 completo de Random Forest Macro (último del bosque, 73 hojas).
+│   ├── 03_flujo_validacion_macro.png  <- Diagrama visual Train 75% / Test 25% + balanceo vs. Imputación (1,091).
+│   ├── 03_arbol_gini_completo.png     <- Árbol completo DecisionTree Gini Macro (prof. 6, 25 hojas).
+│   ├── 03_arbol_entropia_completo.png <- Árbol completo DecisionTree Entropía Macro (prof. 8, 51 hojas).
+│   ├── 03_arbol_rf_001_completo.png   <- Árbol #1 completo de Random Forest Macro (81 hojas).
+│   ├── 03_arbol_rf_250_completo.png   <- Árbol #250 completo de Random Forest Macro (último del bosque, 68 hojas).
 │   ├── 03_arbol_xgboost_ronda1_completo.png   <- Árbol completo XGBoost Macro Ronda 1 (level-wise, 16 hojas).
-│   ├── 03_arbol_xgboost_ronda200_completo.png <- Árbol completo XGBoost Macro Ronda #200 (13 hojas).
-│   ├── 03_arbol_lightgbm_ronda2_completo.png  <- Árbol completo LightGBM Macro Ronda 2 (leaf-wise, 23 hojas).
-│   ├── 03_arbol_lightgbm_ronda200_completo.png<- Árbol completo LightGBM Macro Ronda #200 (leaf-wise, 10 hojas).
-│   ├── 03_matrices_confusion_macro.png<- Matrices de confusión 4×4 en Test (n=202) con Accuracy y F1.
+│   ├── 03_arbol_xgboost_ronda200_completo.png <- Árbol completo XGBoost Macro Ronda #200 (10 hojas).
+│   ├── 03_arbol_lightgbm_ronda2_completo.png  <- Árbol completo LightGBM Macro Ronda 2 (leaf-wise, 25 hojas).
+│   ├── 03_arbol_lightgbm_ronda200_completo.png<- Árbol completo LightGBM Macro Ronda #200 (leaf-wise, 7 hojas).
+│   ├── 03_matrices_confusion_macro.png<- Matrices de confusión 4×4 en Test (25%, n=253) con Accuracy y F1.
 │   ├── 03_feature_importance_macro.png<- Importancia relativa de las 17 variables (Nivel Macro).
 │   ├── 04_comparativa_global_modelos.png   <- Panel 1×3: CV-5 F1, Test Accuracy y Trade-off Precisión vs. Velocidad.
 │   ├── 04_gini_vs_entropia_curvas.png      <- Curvas Train vs. CV-5 (max_depth 2..12) marcando zona de overfitting.
@@ -149,17 +149,17 @@ Zonas_Puno/
 ### Nivel Micro — Edificaciones (`02_micro_edificaciones.ipynb`) ✅ Completado
 * **Estrategia de Etiquetado (3 Clases Urbanas):** De 652 edificaciones, se verificaron **184** combinando `name`, `type` y POIs internos (`Residencial`: 73, `Institucional`: 60, `Comercial_Servicios`: 51). Las **468** restantes (sin etiqueta o ambiguas como `roof`) se imputaron con el modelo ganador.
 * **11 Features ($X$):** `area_m2`, `perimetro_m`, `compacidad` (Polsby-Popper), `relacion_aspecto`, `num_vertices`, `dist_plaza_armas_m`, `dist_via_cercana_m`, `jerarquia_via`, `densidad_edificios_150m` (`cKDTree`), `dist_vecino_cercano_m` (`cKDTree`), `pois_entorno_300m` (`cKDTree`, excluyendo POIs internos con distancia $\le 1\text{ m}$ para evitar *data leakage*).
-* **Benchmark de Resultados (Train/Test 80/20 estratificado + 5-Fold Stratified CV):**
+* **Benchmark de Resultados (Train/Test 75/25 estratificado: 138/46 + 5-Fold Stratified CV sobre el 75% Train):**
 
 | Modelo | Test Acc | Test F1 (Macro) | CV-5 Acc | CV-5 F1 (Macro) | Tiempo Train (ms) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **LightGBM** *(Ganador CV)* | 0.8108 | 0.7874 | **0.7667** | **0.7496** | 92.63 |
-| **Random Forest** *(Ganador Test)* | **0.8378** | **0.8115** | 0.7664 | 0.7465 | 1224.15 |
-| **XGBoost** | 0.7838 | 0.7545 | 0.7395 | 0.7160 | 606.56 |
-| **DecisionTree (Entropía)** | 0.6757 | 0.6204 | 0.7009 | 0.6744 | 8.96 |
-| **DecisionTree (Gini)** | 0.8108 | 0.7831 | 0.6793 | 0.6517 | **7.46** |
+| **XGBoost** *(Ganador CV)* | 0.7826 | 0.7593 | **0.7540** | **0.7275** | 211.17 |
+| **Random Forest** *(Empate Test Acc)* | **0.8261** | 0.8046 | **0.7540** | 0.7264 | 406.26 |
+| **DecisionTree (Gini)** | 0.7826 | 0.7498 | 0.7386 | 0.7115 | 2.22 |
+| **DecisionTree (Entropía)** | 0.7826 | 0.7498 | 0.7315 | 0.7013 | **1.66** |
+| **LightGBM** *(Ganador Test F1)* | **0.8261** | **0.8087** | 0.7251 | 0.6882 | 40.16 |
 
-* **Distribución Final Predicha (652 edificios):** `Institucional`: 287 (60 verif. + 227 pred.), `Comercial_Servicios`: 195 (51 verif. + 144 pred.), `Residencial`: 170 (73 verif. + 97 pred.).
+* **Distribución Final Predicha (652 edificios, imputación con XGBoost):** `Institucional`: 281 (60 verif. + 221 pred.), `Residencial`: 203 (73 verif. + 130 pred.), `Comercial_Servicios`: 168 (51 verif. + 117 pred.).
 * **Insumo para el Paso 3 (Nivel Macro):** `data_puno/puno_buildings_clasificados.geojson` ya contiene todas las edificaciones clasificadas y sus áreas en $m^2$ para enriquecer la agregación zonal.
 
 ### Nivel Macro — Zonificación Urbana (`03_macro_zonificacion.ipynb`) ✅ Completado
@@ -169,23 +169,23 @@ Zonas_Puno/
   * **Red Vial:** `longitud_vias_m`, `num_tramos_via`, `pct_vias_arteriales`, `pct_vias_rurales_peat`, `dist_via_principal_m`.
   * **Servicios y Transporte (`cKDTree`):** `num_pois_celda`, `num_pois_500m`, `dist_poi_cercano_m`, `dist_transporte_m`.
   * **Contexto Geográfico e Hídrico:** `dist_plaza_armas_m`, `dist_lago_agua_m`, `dist_quebrada_rio_m`.
-* **Benchmark de Resultados (Train/Test 80/20 estratificado + 5-Fold Stratified CV, con balanceo de clases):**
+* **Benchmark de Resultados (Train/Test 75/25 estratificado: 756/253 + 5-Fold Stratified CV sobre el 75% Train, con balanceo de clases):**
 
 | Modelo | Test Acc | Test Bal. Acc | Test F1 (Macro) | CV-5 Acc | CV-5 F1 (Macro) | Tiempo Train (ms) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Random Forest** *(Ganador CV)* | 0.7426 | 0.7023 | 0.6803 | 0.7681 | **0.6980** | 449.01 |
-| **XGBoost** *(Ganador Test)* | **0.7772** | **0.7189** | **0.7120** | **0.7760** | 0.6977 | 754.24 |
-| **LightGBM** | 0.7574 | 0.6728 | 0.6670 | 0.7691 | 0.6767 | 282.91 |
-| **DecisionTree (Gini)** | 0.6535 | 0.6221 | 0.5996 | 0.6809 | 0.6318 | **5.24** |
-| **DecisionTree (Entropía)** | 0.6634 | 0.6205 | 0.5841 | 0.6671 | 0.5999 | 9.25 |
+| **XGBoost** *(Ganador CV y Test)* | **0.7787** | **0.7286** | **0.7133** | **0.7778** | **0.7029** | 707.93 |
+| **LightGBM** | **0.7787** | 0.7123 | 0.7040 | **0.7778** | 0.6991 | 308.63 |
+| **Random Forest** | 0.7549 | 0.7049 | 0.6854 | 0.7685 | 0.6969 | 730.84 |
+| **DecisionTree (Gini)** | 0.6838 | 0.6293 | 0.6161 | 0.7169 | 0.6655 | **5.07** |
+| **DecisionTree (Entropía)** | 0.6640 | 0.6642 | 0.6179 | 0.7037 | 0.6393 | 8.13 |
 
-* **Distribución Final (2,100 celdas activas):** `Urbano_Residencial`: 970 (566 verif. + 404 pred.), `Rural_Agricola_Natural`: 799 (167 verif. + 632 pred.), `Equipamiento_Productivo`: 194 (149 verif. + 45 pred.), `Areas_Verdes_Recreacion`: 137 (127 verif. + 10 pred.).
+* **Distribución Final (2,100 celdas activas, imputación con XGBoost):** `Urbano_Residencial`: 1,034 (566 verif. + 468 pred.), `Rural_Agricola_Natural`: 721 (167 verif. + 554 pred.), `Equipamiento_Productivo`: 208 (149 verif. + 59 pred.), `Areas_Verdes_Recreacion`: 137 (127 verif. + 10 pred.).
 * **Insumo para el Paso 4 (Comparativa Global):** `data_puno/resultados_macro_modelos.csv`, `data_puno/puno_zonificacion_macro.geojson` y `data_puno/mapa_macro_zonificacion.html`.
 
 ### Evaluación Comparativa Global (`04_evaluacion_comparativa.ipynb`) ✅ Completado
-* **Gini vs. Entropía (`max_depth` óptimo):** En Nivel Micro ambos alcanzan óptimo en `max_depth = 4` (11 hojas); en Nivel Macro ambos en `max_depth = 6` (27–28 hojas), con Gini ~2.4× más rápido (`5.5 ms` vs `13.0 ms`) y mejor F1 en Test (`0.5996` vs `0.5841`).
-* **Aciertos y Discrepancias en Test (4 familias: DT Gini, RF, XGB, LGBM):**
-  * **Nivel Micro (`n = 37`):** `73.0%` Acierto Unánime (27), `21.6%` Discrepancia entre Modelos (8), `5.4%` Error Unánime (2).
-  * **Nivel Macro (`n = 202`):** `56.9%` Acierto Unánime (115), `29.2%` Discrepancia entre Modelos (59), `13.9%` Error Unánime (28).
-* **Coherencia Multiescala (652/652 edificaciones cruzadas con la grilla Macro):** `Equipamiento_Productivo` concentra 444 edificios (42.6% Institucional, 30.0% Comercial/Servicios), `Areas_Verdes_Recreacion` 140, `Urbano_Residencial` 43 y `Rural_Agricola_Natural` 25.
+* **Gini vs. Entropía (`max_depth` óptimo):** En Nivel Micro ambos alcanzan óptimo en `max_depth = 2` (4 hojas); en Nivel Macro Gini alcanza óptimo en `max_depth = 6` (25 hojas, `CV-5 F1 = 0.6655`) y Entropía en `max_depth = 8` (51 hojas, `CV-5 F1 = 0.6393`), con Gini más rápido y con menos de la mitad de sobreajuste (`0.075` vs. `0.161`).
+* **Aciertos y Discrepancias en Test (25%, 4 familias: DT Gini, RF, XGB, LGBM):**
+  * **Nivel Micro (`n = 46`):** `67.4%` Acierto Unánime (31), `26.1%` Discrepancia entre Modelos (12), `6.5%` Error Unánime (3).
+  * **Nivel Macro (`n = 253`):** `62.5%` Acierto Unánime (158), `22.1%` Discrepancia entre Modelos (56), `15.4%` Error Unánime (39).
+* **Coherencia Multiescala (652/652 edificaciones cruzadas con la grilla Macro):** `Equipamiento_Productivo` concentra 445 edificios (41.8% Institucional, 31.5% Residencial, 26.7% Comercial/Servicios), `Areas_Verdes_Recreacion` 136, `Urbano_Residencial` 54 y `Rural_Agricola_Natural` 17.
 * **Entregables Finales:** `comparativa_global_modelos.csv`, `comparativa_global_detallada.csv` y `mapa_final_multiescala_puno.html`.
